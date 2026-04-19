@@ -1,0 +1,96 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: inventory
+    // Fields: id, name, category, quantity, addedAt, uid
+    //
+    // Collection: preferences
+    // Fields: usualDishes, cookingTimePreference, difficultyPreference, favoriteCuisines, uid
+    //
+    // Collection: history
+    // Fields: id, recipeId, recipeTitle, timestamp, selectedCuisine, uid
+    //
+    // ===============================================================
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isDocOwner() {
+      return isAuthenticated() && request.auth.uid == resource.data.uid;
+    }
+
+    function isValidIngredient(data) {
+      return data.keys().hasAll(['id', 'name', 'category', 'addedAt', 'uid']) &&
+             data.id is string &&
+             data.name is string && data.name.size() > 0 && data.name.size() < 100 &&
+             data.category in ['冷藏', '冷冻', '储藏'] &&
+             data.addedAt is number &&
+             data.uid == request.auth.uid;
+    }
+
+    function isValidPreferences(data) {
+       return data.keys().hasAll(['usualDishes', 'cookingTimePreference', 'difficultyPreference', 'favoriteCuisines', 'uid']) &&
+              data.usualDishes is list &&
+              data.cookingTimePreference in ['quick', 'medium', 'elaborate'] &&
+              data.difficultyPreference in ['easy', 'medium', 'hard'] &&
+              data.favoriteCuisines is list &&
+              data.uid == request.auth.uid;
+    }
+
+    function isValidHistory(data) {
+      return data.keys().hasAll(['id', 'recipeId', 'recipeTitle', 'timestamp', 'selectedCuisine', 'uid']) &&
+             data.id is string &&
+             data.recipeId is string &&
+             data.recipeTitle is string &&
+             data.timestamp is number &&
+             data.selectedCuisine is string &&
+             data.uid == request.auth.uid;
+    }
+
+    function isValidStats(data) {
+      return data.keys().hasAll(['callCount']) &&
+             data.callCount is number;
+    }
+
+    // ===============================================================
+    // Rules
+    // ===============================================================
+
+    match /inventory/{id} {
+      allow read: if isDocOwner();
+      allow create: if isAuthenticated() && isValidIngredient(request.resource.data);
+      allow update: if isDocOwner() && isValidIngredient(request.resource.data);
+      allow delete: if isDocOwner();
+    }
+
+    match /preferences/{userId} {
+      allow read: if isOwner(userId);
+      allow create, update: if isOwner(userId) && isValidPreferences(request.resource.data);
+      allow delete: if isOwner(userId);
+    }
+
+    match /history/{id} {
+      allow read: if isDocOwner();
+      allow create: if isAuthenticated() && isValidHistory(request.resource.data);
+      allow update: if isDocOwner() && isValidHistory(request.resource.data);
+      allow delete: if isDocOwner();
+    }
+
+    match /stats/{dateId} {
+      allow read: if isAuthenticated();
+      allow create, update: if isAuthenticated() && isValidStats(request.resource.data);
+    }
+  }
+}

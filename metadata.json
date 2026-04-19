@@ -1,0 +1,6 @@
+{
+  "name": "今天吃什么 (What to Eat Today)",
+  "description": "智能食材管理与菜谱推荐助手。根据您的现有食材、口味偏好、烹饪时间和难度，为您随机推荐全球各地的美味。还提供临期食材提醒及补货建议。",
+  "requestFramePermissions": [],
+  "majorCapabilities": []
+}

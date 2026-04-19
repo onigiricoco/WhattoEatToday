@@ -1,0 +1,50 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+
+  --color-bento-bg: #F7F7F7;
+  --color-bento-accent: #FF5A00;
+  --color-bento-border: #1A1A1A;
+  --color-bento-card: #FFFFFF;
+  
+  --color-fridge: #E3F2FD;
+  --color-freezer: #E8EAF6;
+  --color-pantry: #FFF3E0;
+}
+
+@layer base {
+  body {
+    @apply font-sans bg-bento-bg text-bento-border min-h-screen antialiased;
+    font-family: var(--font-sans);
+  }
+
+  h1, h2, h3, h4 {
+    @apply font-black tracking-tight uppercase;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-bento-border text-white px-6 py-2 rounded-xl transition-all hover:bg-black active:scale-95 font-bold tracking-tight uppercase text-sm;
+  }
+
+  .card {
+    @apply bg-bento-card rounded-[20px] p-5 shadow-none border-2 border-bento-border transition-all flex flex-col;
+  }
+
+  .card-title {
+    @apply text-sm font-black uppercase mb-4 flex justify-between items-center;
+  }
+
+  .input-field {
+    @apply bg-white border-2 border-bento-border rounded-xl px-4 py-2 focus:ring-0 focus:border-bento-accent outline-none transition-all text-sm font-medium;
+  }
+
+  .grid-bento {
+    @apply grid grid-cols-1 md:grid-cols-4 md:grid-rows-3 gap-4;
+  }
+}
+
+

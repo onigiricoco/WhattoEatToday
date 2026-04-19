@@ -1,0 +1,73 @@
+{
+  "entities": {
+    "Ingredient": {
+      "title": "Ingredient",
+      "description": "A food item in the user's inventory",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "category": { "type": "string", "enum": ["冷藏", "冷冻", "储藏"] },
+        "quantity": { "type": "string" },
+        "addedAt": { "type": "number", "description": "Timestamp when added" },
+        "uid": { "type": "string", "description": "User ID of the owner" }
+      },
+      "required": ["id", "name", "category", "addedAt", "uid"]
+    },
+    "UserPreferences": {
+      "title": "UserPreferences",
+      "description": "User's cooking preferences and habits",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "usualDishes": { "type": "array", "items": { "type": "string" } },
+        "cookingTimePreference": { "type": "string", "enum": ["quick", "medium", "elaborate"] },
+        "difficultyPreference": { "type": "string", "enum": ["easy", "medium", "hard"] },
+        "favoriteCuisines": { "type": "array", "items": { "type": "string" } }
+      },
+      "required": ["uid", "usualDishes", "cookingTimePreference", "difficultyPreference", "favoriteCuisines"]
+    },
+    "HistoryEntry": {
+      "title": "HistoryEntry",
+      "description": "A record of a generated recipe recommendation",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "recipeId": { "type": "string" },
+        "recipeTitle": { "type": "string" },
+        "timestamp": { "type": "number" },
+        "selectedCuisine": { "type": "string" },
+        "uid": { "type": "string" }
+      },
+      "required": ["id", "recipeId", "recipeTitle", "timestamp", "selectedCuisine", "uid"]
+    },
+    "DailyStats": {
+      "title": "DailyStats",
+      "description": "Global usage statistics for a specific day",
+      "type": "object",
+      "properties": {
+        "callCount": { "type": "number", "description": "Total AI calls today" },
+        "lastUpdated": { "type": "number" }
+      },
+      "required": ["callCount"]
+    }
+  },
+  "firestore": {
+    "inventory/{ingredientId}": {
+      "schema": "Ingredient",
+      "description": "User's ingredients across all categories"
+    },
+    "preferences/{userId}": {
+      "schema": "UserPreferences",
+      "description": "User specific cooking preferences"
+    },
+    "history/{historyId}": {
+      "schema": "HistoryEntry",
+      "description": "Recommendation history"
+    },
+    "stats/{dateId}": {
+      "schema": "DailyStats",
+      "description": "Global daily usage counters (ID format: YYYY-MM-DD)"
+    }
+  }
+}
